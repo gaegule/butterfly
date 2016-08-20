@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace= "bbsControlMapper" >
+    
+    <select id ="selectBbsList" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        SELECT	no, 
+        		title, 
+        		content, 
+        		nm, 
+        		passw, 
+        		grp, 
+        		seq, 
+        		lvl, 
+        		hit, 
+        		regist_id, 
+        		DATE_FORMAT( regist_date , '%Y-%m-%d' ) as regist_date 
+		FROM tw_bbs
+		order by grp desc, 	seq
+		LIMIT 10 OFFSET #{pageStart}
+    </select >
+    
+    <select id ="selectBbsListCount" parameterType="java.util.HashMap" resultType= "java.lang.Integer">
+        SELECT	count(1) cnt
+		FROM tw_bbs
+    </select >
+    
+    <select id ="selectBbsDetail" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        SELECT	no, 
+        		title, 
+        		content, 
+        		nm, 
+        		passw, 
+        		grp, 
+        		seq, 
+        		lvl, 
+        		hit, 
+        		a.regist_id, 
+        		DATE_FORMAT( a.regist_date , '%Y-%m-%d' ) as regist_date,
+            	ifnull(max(b.attach_file_no),'N') AS attach_file_no
+		FROM tw_bbs a
+    	LEFT OUTER JOIN tw_file b ON b.attach_file_no = a.no
+		WHERE no = #{bbsNo}
+
+    </select >
+    
+    <select id ="selectBbsDetailAttach" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+	    SELECT	attach_file_no, 
+	    		attach_file_seq, 
+	    		orginal_file_nm, 
+	    		stored_file_nm, 
+	    		file_size, 
+	    		DATE_FORMAT( regist_date , '%Y-%m-%d' ) AS regist_date, 
+	    		use_yn 
+		FROM	tw_file
+    	WHERE	attach_file_no = #{bbsNo}
+    </select>
+    <select id ="selectBbsMaxSeq" parameterType="java.util.HashMap" resultType= "java.lang.Integer">
+        select ifnull(max(no)+1,1) as maxno from tw_bbs
+    </select >
+    
+    <select id ="selectFileMaxSeq" parameterType="java.util.HashMap" resultType= "java.lang.Integer">
+        select ifnull(max(attach_file_seq)+1,1) as maxno from tw_file where attach_file_no = #{attach_file_no}
+    </select >
+    
+    <insert id ="insertNewBBS" parameterType="java.util.HashMap" >
+    	INSERT INTO tw_bbs
+			(no, title, content, nm, passw, grp, seq, lvl, hit, regist_id, regist_date) 
+		VALUES (
+			#{no},
+			#{title}, 
+			#{contentVal},
+			#{nm}, 
+			#{passw},
+			#{no}, 
+			1, 
+			1, 
+			0,
+			#{regist_id}, 
+			sysdate()
+		)
+    </insert>
+    
+    <insert id ="insertReplyBBS" parameterType="java.util.HashMap" >
+    	INSERT INTO tw_bbs
+			(no, title, content, nm, passw, grp, seq, lvl, hit, regist_id, regist_date) 
+		VALUES (
+			#{no},
+			#{title}, 
+			#{contentVal},
+			#{passw},
+			#{nm}, 
+			#{grp}, 
+			#{seq}, 
+			#{lvl}, 
+			#{hit},
+			#{regist_id}, 
+			sysdate()
+		)
+    </insert>
+    
+    <insert id ="insertFile" parameterType="java.util.HashMap" >
+    	INSERT INTO tw_file
+			(attach_file_no, attach_file_seq, orginal_file_nm, stored_file_nm, file_size, regist_date, use_yn) 
+		VALUES 
+			(#{attach_file_no}, #{attach_file_seq}, #{orginal_file_nm}, #{stored_file_nm}, #{file_size},sysdate() , 'Y');
+    </insert>
+
+    <update id ="updateBBS" parameterType="java.util.HashMap" >
+    	UPDATE	tw_bbs 
+		SET		title = #{title}, 
+				content = #{contentVal}, 
+				nm = #{nm}, 
+				passw = #{passw}
+		WHERE	no = #{bbsId}
+   	
+   	</update>
+   	<update id ="updateReplyBBS" parameterType="java.util.HashMap" >
+    	UPDATE	tw_bbs 
+		SET		seq = seq+1
+		WHERE	no = #{grp}
+		AND		seq > #{seq}
+   	
+   	</update>
+   	
+    <insert id ="deleteMisung" parameterType="java.util.HashMap" >
+    	delete from tw_bbs where no = #{bbsNo}
+    </insert>
+</mapper>

@@ -1,0 +1,7 @@
+1. 스프링 std 설치 및 압축 풀기
+2. spring Legacy Project 로  butterfly 프로젝트 생성
+3. pom.xml에 spring , log4 , mysql, file upload 등 관련 선언
+4. 서버는 tomcat 7.0 설치 
+5. DB는 mysql 설치
+6. 화면 UI FrameWork 은 bootstrap 으로 확정
+

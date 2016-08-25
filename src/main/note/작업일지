@@ -5,3 +5,17 @@
 5. DB는 mysql 설치
 6. 화면 UI FrameWork 은 bootstrap 으로 확정
 
+
+github 로 형상관리
+aws 가입 및 instance 생성
+$ sudo yum install mysql55-server 로 mysql설치
+$ sudo service mysqld start mysql start
+
+mysql 접속해서 Access denied for user 문제로
+
+mysqladmin -u root password '1234' --패스워드 변경
+mysql -h localhost -u root -p
+
+
+
+기본으로 자바 1.7설치 되어있음.

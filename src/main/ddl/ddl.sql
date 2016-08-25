@@ -8,7 +8,7 @@ DEFAULT CHARACTER SET utf8mb4
 DEFAULT COLLATE utf8mb4_unicode_ci;
 
 
-0CREATE TABLE TW_BBS(
+CREATE TABLE TW_BBS(
 no int unsigned not null,	
 title varchar(200),
 content TEXT,

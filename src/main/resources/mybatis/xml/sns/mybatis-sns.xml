@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace= "snsControlMapper" >
+
+    <insert id ="insertImageFile" parameterType="java.util.HashMap" >
+    	INSERT INTO sns_file
+			(attach_file_no, attach_file_seq, orginal_file_nm, stored_file_nm, file_path ,file_size, regist_date, use_yn) 
+		VALUES 
+			(#{attach_file_no}, #{attach_file_seq}, #{orginal_file_nm}, #{stored_file_nm}, #{file_path}, #{file_size},sysdate() , 'N');
+    </insert>
+    
+    <update id ="updateImageFile" parameterType="java.util.HashMap" >
+    	update sns_file set use_yn='Y' where attach_file_no=#{attach_file_no} and use_yn='N'
+    </update>
+    
+    <update id ="updateImageFileSeq" parameterType="java.util.HashMap" >
+    	update sns_file set use_yn='Y' ,attach_file_seq=#{attach_file_seqU} where attach_file_no=#{attach_file_no} and attach_file_seq=#{attach_file_seq}
+    </update>
+
+	<delete id ="deleteImageFile" parameterType="java.util.HashMap" >
+    	delete from sns_file where attach_file_no=#{attach_file_no} and attach_file_seq=#{attach_file_seq}
+    </delete>
+    
+    <delete id ="deleteImageFileAll" parameterType="java.util.HashMap" >
+    	delete from sns_file where attach_file_no=#{attach_file_no}
+    </delete>
+    
+	<insert id ="insertNewSns" parameterType="java.util.HashMap" >
+    	INSERT INTO sns_profile
+			(user_no, attach_file_no, profile_msg, regist_date) 
+		VALUES 
+			(#{user_no}, #{attach_file_no}, #{profile_msg}, sysdate())
+		
+		<selectKey resultType="int" keyProperty="iq" order="AFTER">
+        	SELECT LAST_INSERT_ID()
+    	</selectKey> 
+    </insert>
+    
+    <update id ="updateSns" parameterType="java.util.HashMap" >
+    	update sns_profile set profile_msg=#{profile_msg} where sns_profile_no = #{sns_profile_no}
+    </update>
+
+	<select id ="selectSnsProFileList" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        SELECT	sns_profile_no,
+        		ifnull(a.user_no,'') AS user_no,
+        		b.user_name,
+        		ifnull(a.attach_file_no,'') AS attach_file_no, 
+        		ifnull(profile_msg,'') AS profile_msg,
+        		ifnull((SELECT GROUP_CONCAT(CONCAT(b.file_path,b.orginal_file_nm)) FROM sns_file b WHERE b.attach_file_no=a.attach_file_no),'') AS sns_img_file,
+        		DATE_FORMAT( a.regist_date , '%Y-%m-%d' ) as regist_date 
+		FROM sns_profile a
+		inner join tw_user b on b.user_no = a.user_no
+		WHERE a.user_no = #{user_no}
+		order by a.regist_date desc, 	a.user_no
+		LIMIT 10 OFFSET #{pageStart}
+    </select > 
+    
+    <select id ="selectSnsFriendProFileList" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        SELECT	sns_profile_no,
+        		ifnull(a.user_no,'') AS user_no,
+        		d.user_name, 
+        		ifnull(a.attach_file_no,'') AS attach_file_no, 
+        		ifnull(profile_msg,'') AS profile_msg,
+        		ifnull((SELECT GROUP_CONCAT(CONCAT(b.file_path,b.orginal_file_nm)) FROM sns_file b WHERE b.attach_file_no=a.attach_file_no),'') AS sns_img_file,
+        		DATE_FORMAT( a.regist_date , '%Y-%m-%d' ) as regist_date 
+		FROM sns_profile a
+		inner join tw_user d on d.user_no = a.user_no
+	    where exists (
+	      select  b.user_no , c.f_user_no
+	      from  tw_user b
+	      left outer join tw_friend c on c.t_user_no = b.user_no
+	      where b.user_no = #{user_no}
+	      and   a.user_no = b.user_no or a.user_no = f_user_no
+	    )
+		order by a.regist_date desc, 	a.user_no
+		LIMIT 10 OFFSET #{pageStart}
+    </select > 
+    
+    
+    <select id ="selectSnsDetail" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        SELECT	sns_profile_no,
+        		ifnull(a.user_no,'') AS user_no, 
+        		ifnull(c.user_name,'anonymous') AS user_name,
+        		ifnull(a.attach_file_no,'') AS attach_file_no, 
+        		ifnull(profile_msg,'') AS profile_msg,
+        		DATE_FORMAT( a.regist_date , '%Y-%m-%d' ) as regist_date 
+		FROM sns_profile a
+		LEFT OUTER JOIN tw_user c on c.user_no = a.user_no
+		WHERE sns_profile_no =#{sns_profile_no}
+    </select >
+    
+    <select id ="selectSnsAttach" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        SELECT	attach_file_no, 
+        		attach_file_seq, 
+        		orginal_file_nm, 
+        		stored_file_nm, 
+        		file_path ,
+        		file_size, 
+        		regist_date, 
+        		use_yn
+		FROM sns_file a
+		WHERE attach_file_no =#{attach_file_no}
+    </select >
+    
+    <select id ="selectSnsAttachSeq" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        SELECT	attach_file_no, 
+        		attach_file_seq, 
+        		orginal_file_nm, 
+        		stored_file_nm, 
+        		file_path ,
+        		file_size, 
+        		regist_date, 
+        		use_yn
+		FROM sns_file a
+		WHERE attach_file_no =#{attach_file_no}
+		AND	  attach_file_seq =#{attach_file_seq}
+    </select >
+
+	<select id ="selectSnsFileMaxSeq" parameterType="java.util.HashMap" resultType= "java.lang.Integer">
+        select ifnull(max(attach_file_no)+1,1) as attach_file_no from sns_file
+    </select >
+    
+    <select id ="selectSnsFileMaxSeqS" parameterType="java.util.HashMap" resultType= "java.lang.Integer">
+        select ifnull(max(attach_file_seq)+1,1) AS attach_file_seq from sns_file where attach_file_no = #{attach_file_no}
+    </select > 
+    
+    <insert id ="insertFriendRequest" parameterType="java.util.HashMap" >
+    	INSERT INTO tw_friend
+			(t_user_no, f_user_no, status, req_yn, req_time) 
+		VALUES 
+			(#{t_user_no}, #{f_user_no}, 'R', 'Y', sysdate()),
+			(#{f_user_no}, #{t_user_no}, 'R', '', sysdate())
+    </insert>
+    
+    
+    <select id ="selectFriendRequest" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        select  b.user_no
+        		,b.user_name
+		        ,b.picture_url
+		        ,c.birthday
+		        ,c.sex
+		        ,c.city
+		        ,c.nickname
+		        ,c.job
+		        ,c.email
+		from    tw_friend a
+		inner join tw_user b On b.user_no = a.f_user_no
+		inner join tw_user_profile c On c.user_no = b.user_no
+		where a.t_user_no = #{user_no}
+		and	  a.status = #{status}
+    </select >
+    
+    <select id ="selectFriendSearch" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        select  a.user_no
+        		,a.user_name
+		        ,a.picture_url
+		        ,concat(substring(b.birthday,1,4),'-',substring(b.birthday,5,2),'-',substring(b.birthday,7,2)) as birthday
+		        ,b.sex
+		        ,b.city
+		        ,b.nickname
+		        ,b.job
+		        ,b.email
+		from    tw_user a
+		inner join tw_user_profile b On b.user_no = a.user_no
+		where not exists(
+			select ''
+			from	tw_friend c
+			where	c.t_user_no = a.user_no
+			and		c.t_user_no = #{user_no}
+		)
+		and	a.user_name = #{user_name}
+    </select >
+    
+    <select id ="selectMayFriendSearch" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+		select  c.user_no
+        	   ,c.user_name
+		       ,c.picture_url
+		       ,d.birthday
+		       ,d.sex
+		       ,d.city
+		       ,d.nickname
+		       ,d.job
+		       ,d.email
+		from    tw_friend a
+		inner join tw_friend b ON b.t_user_no = a.f_user_no AND	b.status = 'S'
+		inner join tw_user c ON c.user_no = b.f_user_no
+		inner join tw_user_profile d ON d.user_no = c.user_no
+		where   a.t_user_no = #{user_no}
+		and   	b.f_user_no != #{user_no}
+		and not exists (
+				  select ''
+				  from tw_friend e
+				  where e.f_user_no = b.f_user_no
+				  and e.t_user_no = #{user_no}
+				)
+		
+    </select > 
+    
+    
+    <update id ="confirmFriendRequest" parameterType="java.util.HashMap" >
+    	update tw_friend set status='S' 
+    	where (t_user_no = #{t_user_no} AND f_user_no = #{f_user_no}) 
+    	OR 
+    	(t_user_no = #{f_user_no} AND f_user_no = #{t_user_no})
+    </update>
+    
+    <delete id ="deleteSns" parameterType="java.util.HashMap" >
+    	delete from sns_profile WHERE sns_profile_no =#{sns_profile_no} 
+    </delete>
+    
+    <delete id ="deleteSnsFile" parameterType="java.util.HashMap" >
+    	delete from sns_file WHERE attach_file_no =#{attach_file_no} 
+    </delete>
+</mapper>

@@ -33,7 +33,7 @@
 		<div class="row" style="border: 1px solid black;">
 			<div class="col-xs-12">
 				<!-- <h2>bootstrap top menu</h2> -->
-				<jsp:include page="layout/top.jsp" flush="false"/>
+				<jsp:include page="/WEB-INF/views/layout/bbs/top.jsp" flush="false"/>
 				
 			</div>
 		</div>

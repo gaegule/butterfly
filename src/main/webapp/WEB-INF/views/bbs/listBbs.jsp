@@ -4,14 +4,7 @@
 <html lang="ko">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet"href="/resources/bootstrap-336/css/bootstrap.min.css">
-<link rel="stylesheet" href="/resources/bootstrap-336/css/bootstrap-theme.min.css">
-<link rel="stylesheet" href="/resources/bootstrap-336/css/bootstrap-table.css">
-<link rel="stylesheet" href="/resources/bootstrap-336/css/bbs.css">
-<script type="text/javascript" src="/resources/js/jquery-2.2.3.min.js"></script>
-<script type="text/javascript" src="/resources/bootstrap-336/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/resources/bootstrap-336/js/bootstrap-table.js"></script>
-<script type="text/javascript" src="/resources/js/common.js"></script>
+<jsp:include page="/WEB-INF/views/include/includeBbs.jsp" flush="true"/>
 <script>
 	$(document).ready(function(){
 		//alert("ready");
@@ -33,7 +26,7 @@
 		//alert("두번째==>" + $("#pageStart").val());
 		
 		//$("table tbody").remove();
-		ajax_form_post("/bbs/list","form","LIST","table","",pageIdx);
+		ajax_form_post("/bbs/list","form","LIST","tableBoo","",pageIdx);
 	}
 	
 	function operateFormatter(value, row, index) {
@@ -85,29 +78,31 @@
 	</form>
 
 	<div class="container-fluid" >
-		<div class="row" style="border: 1px solid black;">
+		<div class="row" style="border: 0px solid black;">
 			<div class="col-xs-12 top-menu-block">
-				<jsp:include page="../layout/top.jsp" flush="false"/>
+				<c:import url="/com/layout/top"></c:import>
 			</div>
 		</div>
-		<div class="row div-body" style="border: 1px solid black;">
-			<div class="col-sm-2" style="border-right:1px solid black;height:525px">
-				왼쪽메뉴
+		<div class="row div-body" style="border: 0px solid black;">
+			<div class="col-md-2 col-lg-2 visible-md visible-lg" style="border-right:1px solid black;height:525px">
+				<jsp:include page="/WEB-INF/views/layout/bbs/left.jsp" flush="false"/>
 			</div>
-			<div class="col-sm-10">
+			<div class="col-sm-12 col-md-10 col-lg-10">
 				<div class="row">
 					<div class="col-sm-9">
 						
 					</div>
-					<div class="col-sm-1" style="padding-bottom:10px;margin-top:15px">
+					<div class="col-sm-1" style="padding-bottom:10px;margin-top:35px">
 						<button type="button" style="" class="btn btn-sm btn-primary center-block" onclick="page_move()">등록</button>
 					</div>
 					<div class="col-sm-2">
 					</div>
 				</div>
-				<div class="table-responsive" style="height:413px">
-					<div class="col-sm-10">
-						<table id="table" >
+				<div class="table-responsive" style="height:390px">
+					<div class="col-sm-1">
+			        </div>
+					<div class="col-sm-9">
+						<table id="tableBoo"  >
 							<col width="10%" />
 							<col width="50%" />
 							<col width="20%" />
@@ -126,7 +121,9 @@
 			        </div>
 				</div>
 				<div class="row">
-					<div class="col-sm-10 paging-center" >
+					<div class="col-sm-1">
+			        </div>
+					<div class="col-sm-9 paging-center" >
 						<nav aria-label="Page navigation">
 						  <ul class="pagination">
 						  </ul>
@@ -138,7 +135,7 @@
 			</div>
 		    
 		</div>
-		<div class="row" style="border: 1px solid black;">
+		<div class="row" style="border: 0px solid black;">
 			<div class="col-md-12">bottom</div>
 		</div>
 	</div>

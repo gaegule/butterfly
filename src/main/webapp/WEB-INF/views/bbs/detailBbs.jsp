@@ -4,17 +4,9 @@
 <html lang="ko">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet"href="/resources/bootstrap-336/css/bootstrap.min.css">
-<link rel="stylesheet"href="/resources/bootstrap-336/css/bbs.css">
-<link rel="stylesheet" href="/resources/bootstrap-336/css/bootstrap-theme.min.css">
-<!-- Font-Awesome -->
+<jsp:include page="/WEB-INF/views/include/includeBbs.jsp" flush="true"/>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <!-- Bootstrap-select -->
-<link rel="stylesheet" href="../../assets/plugins/bootstrap-select-1.7.4/css/bootstrap-select.min.css">
-<script type="text/javascript" src="/resources/js/jquery-2.2.3.min.js"></script>
-<script type="text/javascript" src="/resources/bootstrap-336/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/resources/js/common.js"></script>
-
 
 <script>
 		$(document).ready(function(){
@@ -62,7 +54,7 @@
 		left:33%
 	}
 	.div-body {
-		height:525px
+		height:100%
 	}
 </style>
 </head>
@@ -79,12 +71,12 @@
 	<div class="container-fluid" >
 		<div class="row" style="border: 1px solid black;">
 			<div class="col-xs-12 top-menu-block">
-				<jsp:include page="../layout/top.jsp" flush="false"/>
+				<c:import url="/com/layout/top"></c:import>
 			</div>
 		</div>
 		<div class="row div-body" style="border: 1px solid black;">
 			<div class="col-sm-2" style="border-right:1px solid black;height:525px">
-				왼쪽메뉴
+				<jsp:include page="/WEB-INF/views/layout/bbs/left.jsp" flush="false"/>
 			</div>
 			<div class="col-sm-10">
 				
@@ -263,9 +255,7 @@
 				</div>
 			</div> -->
 		</div>
-		<div class="row" style="border: 1px solid black;">
-			<div class="col-md-12">bottom</div>
-		</div>
+		
 	</div>
 	</form>
 </body>

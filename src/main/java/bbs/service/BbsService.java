@@ -16,4 +16,8 @@ public interface BbsService {
 	int bbsUpdate(Map<String, Object> param,List<MultipartFile> list) throws Exception;
 	
 	int bbsDelete(Map<String, Object> param) throws Exception;
+	
+	int bbsFileDelete(Map<String, Object> param) throws Exception;
+	
+	
 }

@@ -1,5 +1,6 @@
 package com.controller;
 
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,9 +11,12 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
 
@@ -62,7 +67,7 @@ public class ComController  extends JsonView{
 		model.addAttribute("serverTime", formattedDate );
 		
 		model.addAttribute("list", outputs );
-		return "home";
+		return "index";
 	}
 	
 	@ResponseBody
@@ -145,4 +150,126 @@ public class ComController  extends JsonView{
 		return mov;
 	}
 	
+	@RequestMapping(value = "/com/loginPage", method = {RequestMethod.GET, RequestMethod.POST})
+	public String loginPage(Model model,@RequestParam Map<String, Object> params) throws Exception {
+
+		String pageType = (String)params.get("pageType");
+		
+		String pageName = "";
+		
+		System.out.println("1111111111111111111111111111111111111111111111111111");
+		
+		//if(pageType != null && "SNS".equals(pageType))
+		
+		return "login/login";
+	}
+	
+	@RequestMapping(value = "/com/login/login", method = RequestMethod.POST)
+	public ModelAndView login(HttpServletRequest request, Model model,@RequestParam Map<String, Object> params) throws Exception {
+		
+		ModelAndView mov= new ModelAndView();
+		
+		params.put("queryId", "userControlMapper.login_select");
+
+		Map<String, Object> outputs = comService.comDetail(params);
+		
+		System.out.println("outputs=========="+outputs);
+		
+		if(outputs == null)
+			mov.addObject("loginYn", "N");
+		else{
+			mov.addObject("loginYn", "Y");
+			HttpSession session = request.getSession(true);
+			session.setAttribute("loginInfo", outputs);
+		}
+		//model.addAttribute("serverTime", formattedDate );
+		mov.addObject("login_info", outputs);
+		mov.setViewName("jsonView");
+		return mov;
+	}
+	
+
+	@RequestMapping(value = "/com/login/logout", method = {RequestMethod.GET, RequestMethod.POST})
+	public ModelAndView loginOut(HttpServletRequest request, Model model,@RequestParam Map<String, Object> params) throws Exception {
+
+		ModelAndView mov= new ModelAndView();
+		HttpSession session = request.getSession(true);
+		session.invalidate();
+		mov.addObject("logout_yn", "Y");
+		mov.setViewName("jsonView");
+		
+		return mov;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/com/login/userSave", method = RequestMethod.POST)
+	public ModelAndView userSave(@RequestParam Map<String, Object> params) throws DataAccessException {
+		
+		ModelAndView mov= new ModelAndView();
+		Model model = null;
+		
+		try{
+			params.put("queryId", "userControlMapper.insertUser");
+
+			params.put("user_name", (String)params.get("first_nm") + (String)params.get("last_nm"));
+
+			params.put("birthday", (String)params.get("year") + (String)params.get("month")
+			+ (String)params.get("day"));
+			
+			Map<String, Object> reSave = comService.userSave(params);
+
+			System.out.println("22 reSave==============="+reSave);
+			
+			mov.addObject("detail", reSave );
+			mov.setViewName("jsonView");
+			
+			
+		}catch(DataAccessException dae){
+			System.out.println("2222222================="+dae.toString());
+		}catch(Exception e){
+			System.out.println("3333333================="+e.toString());
+		}
+		return mov;
+	}
+	
+	@RequestMapping(value = "/com/login/loginAft", method = {RequestMethod.GET, RequestMethod.POST})
+	public String loginAft(Model model,@RequestParam Map<String, Object> params) throws Exception {
+
+		System.out.println("email==="+params.get("email"));
+		
+		//if(pageType != null && "SNS".equals(pageType))
+		model.addAttribute("reParam", params );
+		
+		return "login/loginAft";
+	}
+	
+	@RequestMapping(value = "/com/layout/top", method = {RequestMethod.GET, RequestMethod.POST})
+	public String layoutTop(HttpSession session,@RequestParam Map<String, Object> params) throws Exception {
+
+		String pageName = "layout/bbs/top";
+		
+		Map<String, Object> map =(Map<String, Object>)session.getAttribute("loginInfo");
+
+		System.out.println("1111111111111111111111111111111111111111111111111111"+map);
+		
+		if(map != null)
+			pageName = "layout/sns/login_top";
+		//if(pageType != null && "SNS".equals(pageType))
+		
+		return pageName;
+	}
+	
+	@RequestMapping("/com/fileDownload")
+	public ModelAndView fileDownload(@RequestParam("fileName") String fileName) throws Exception {
+	     
+		System.out.println("fileName=============="+fileName);
+	    /** 첨부파일 정보 조회 */
+	    Map<String, Object> fileInfo = new HashMap<String, Object>();
+	    fileInfo.put("fileNameKey", fileName);
+	    fileInfo.put("fileName", fileName);
+	    //fileInfo.put("filePath", filePath);
+	 
+	    return new ModelAndView("fileDownloadUtil", "downloadFile", fileInfo);
+	}
+
 }

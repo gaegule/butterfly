@@ -51,8 +51,8 @@ public class BbsController  extends JsonView{
 	@RequestMapping(value = "/bbs/move", method = RequestMethod.GET)
 	public String pageMove(Locale locale, Model model,@RequestParam("pageName") String pageName,HashMap<String, Object> param) throws Exception {
 		
-		System.out.println("pageName==="+pageName);
-		System.out.println("params==="+param.get("pageName"));
+		////System.out.println("pageName==="+pageName);
+		//System.out.println("params==="+param.get("pageName"));
 		
 		return pageName;
 	}
@@ -72,7 +72,7 @@ public class BbsController  extends JsonView{
 		
 		params.put("pageStart", pageStart);
 		
-		System.out.println("pageStart=="+params.get("pageStart"));
+		//System.out.println("pageStart=="+params.get("pageStart"));
 		
 		params.put("queryId", "bbsControlMapper.selectBbsListCount");
 		
@@ -80,11 +80,11 @@ public class BbsController  extends JsonView{
 
 		params.put("queryId", "bbsControlMapper.selectBbsList");
 		
-		System.out.println("cnt================"+cnt);
+		//System.out.println("cnt================"+cnt);
 
 		List<HashMap<String, String>> outputs = comService.comList(params);
 
-		System.out.println("outputs.size()"+outputs.size());
+		//System.out.println("outputs.size()"+outputs.size());
 
 		//mov.addObject("serverTime", formattedDate);
 		mov.addObject("list", outputs);
@@ -101,11 +101,11 @@ public class BbsController  extends JsonView{
 		
 		ModelAndView mov= new ModelAndView();
 		Model model = null;
-		System.out.println("replyYn = = = "+params.get("replyYn"));
-		System.out.println("title = = = "+params.get("title"));
-		System.out.println("nm = = = "+params.get("nm"));
-		System.out.println("passw = = = "+params.get("passw"));
-		System.out.println("content = = = "+params.get("contentVal"));
+		//System.out.println("replyYn = = = "+params.get("replyYn"));
+		//System.out.println("title = = = "+params.get("title"));
+		//System.out.println("nm = = = "+params.get("nm"));
+		//System.out.println("passw = = = "+params.get("passw"));
+		//System.out.println("content = = = "+params.get("contentVal"));
 		
 		int maxSeq = 0;
 		
@@ -136,11 +136,11 @@ public class BbsController  extends JsonView{
 		
 		ModelAndView mov= new ModelAndView();
 		Model model = null;
-		/*System.out.println("replyYn = = = "+params.get("replyYn"));
-		System.out.println("title = = = "+params.get("title"));
-		System.out.println("nm = = = "+params.get("nm"));
-		System.out.println("passw = = = "+params.get("passw"));
-		System.out.println("content = = = "+params.get("contentVal"));*/
+		/*//System.out.println("replyYn = = = "+params.get("replyYn"));
+		//System.out.println("title = = = "+params.get("title"));
+		//System.out.println("nm = = = "+params.get("nm"));
+		//System.out.println("passw = = = "+params.get("passw"));
+		//System.out.println("content = = = "+params.get("contentVal"));*/
 		
 		int maxSeq = 0;
 		
@@ -162,8 +162,8 @@ public class BbsController  extends JsonView{
 		//MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		//multipartRequest.getFile("attachFile");
 		//if(multipartRequest.getFile("attachFile") != null)
-		//	System.out.println("file = = = "+multipartRequest.getFile("attachFile"));
-		System.out.println("file = = = "+uploadFile);
+		//	//System.out.println("file = = = "+multipartRequest.getFile("attachFile"));
+		//System.out.println("file = = = "+uploadFile);
 		model.addAttribute("maxSeq", maxSeq );
 		mov.setViewName("jsonView");
 		
@@ -183,22 +183,22 @@ public class BbsController  extends JsonView{
 	    
 	    List<MultipartFile> list =request.getFiles("attachFile");
 	    
-	    System.out.println("list === "+list.size());
+	    //System.out.println("list === "+list.size());
 	    
 	    for(int i=0; i<list.size(); i++){
 	    
 		    MultipartFile mpf = list.get(i);
 		    String originFileName = mpf.getOriginalFilename();
 		 
-		    System.out.println("originFileName=="+originFileName);
-		    System.out.println("mpf = = = "+mpf.isEmpty());
+		    //System.out.println("originFileName=="+originFileName);
+		    //System.out.println("mpf = = = "+mpf.isEmpty());
 	    }
 
-	    System.out.println("replyYn = = = "+params.get("replyYn"));
-		System.out.println("title = = = "+params.get("title"));
-		System.out.println("nm = = = "+params.get("nm"));
-		System.out.println("passw = = = "+params.get("passw"));
-		System.out.println("content = = = "+params.get("contentVal"));
+	    //System.out.println("replyYn = = = "+params.get("replyYn"));
+		//System.out.println("title = = = "+params.get("title"));
+		//System.out.println("nm = = = "+params.get("nm"));
+		//System.out.println("passw = = = "+params.get("passw"));
+		//System.out.println("content = = = "+params.get("contentVal"));
 	    // ... »ý·«
 	 
 		String replyYn = (String)params.get("replyYn");
@@ -224,8 +224,8 @@ public class BbsController  extends JsonView{
 		
 		ModelAndView mov= new ModelAndView();
 
-		System.out.println("replyYn = = = "+params.get("replyYn"));
-		System.out.println("bbsNo = = = "+params.get("bbsNo"));
+		//System.out.println("replyYn = = = "+params.get("replyYn"));
+		//System.out.println("bbsNo = = = "+params.get("bbsNo"));
 
 		Map<String, Object> bbsDetail = comService.comDetail(params);
 		
@@ -252,7 +252,7 @@ public class BbsController  extends JsonView{
 		
 		ModelAndView mov= new ModelAndView();
 		
-		System.out.println("BBS delete 1111111111111111 = = = ");
+		//System.out.println("BBS delete 1111111111111111 = = = ");
 
 		int reVal = bbsService.bbsDelete(params);
 	
@@ -261,5 +261,23 @@ public class BbsController  extends JsonView{
 		
 		return mov;
 	}
+	
+	@RequestMapping(value = "/bbs/attachDelete", method = RequestMethod.POST)
+	public ModelAndView bbsAttachDelete(Locale locale, Model model,@RequestParam Map<String, Object> params) throws Exception {
+		
+		//params.put("queryId", "bbsControlMapper.deleteBbsAttach");
+		
+		ModelAndView mov= new ModelAndView();
+		
+		//System.out.println("BBS delete 1111111111111111 = = = ");
+
+		int reVal = bbsService.bbsFileDelete(params);
+	
+		model.addAttribute("reVal", reVal );
+		mov.setViewName("jsonView");
+		
+		return mov;
+	}
+	
 	
 }

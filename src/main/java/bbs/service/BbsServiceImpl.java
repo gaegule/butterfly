@@ -85,7 +85,30 @@ public class BbsServiceImpl implements BbsService{
 	public int bbsUpdate(Map<String, Object> param,List<MultipartFile> list) throws Exception{
 
 		int reVal = 0;
+		
+		List<Map<String,Object>> fileList= null;
+		
+		System.out.println("bbsUpdatebbsUpdatebbsUpdatebbsUpdatebbsUpdate");
+		
+		System.out.println("bbsUpdate list === " + list.size());
+		
+		if(list != null && list.size() != 0){
+
+			fileList = fileUtil.fileUploadU(list,param);
+		}
+		
 		comdao.mysqlComUpdate("bbsControlMapper.updateBBS",param);
+		
+		if(fileList != null){
+
+			for(int i=0; i<fileList.size(); i++){
+				
+				Map<String, Object> map = fileList.get(i);
+				int reFileVal = comdao.mysqlComSave("bbsControlMapper.insertFile",map);
+			}
+
+		}
+		
 		reVal = Integer.parseInt(param.get("bbsId").toString());
 		return reVal;
 	}
@@ -148,4 +171,19 @@ public class BbsServiceImpl implements BbsService{
 		reVal = Integer.parseInt(param.get("bbsId").toString());
 		return reVal;
 	}
+	
+	@Override
+	public int bbsFileDelete(Map<String, Object> param) throws Exception {
+
+		int reFile = fileUtil.fileDelete(param);
+		
+		if(reFile == 0)
+			comdao.mysqlComUpdate("bbsControlMapper.deleteBbsAttach",param);
+		else
+			reFile = 1;
+		//reVal = Integer.parseInt(param.get("bbsId").toString());
+		return reFile;
+	}
+	
+	
 }

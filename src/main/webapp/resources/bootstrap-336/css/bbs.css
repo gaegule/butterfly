@@ -861,5 +861,9 @@
 	left:33%
 }
 .div-body {
-	height:525px
+	height:100%
 }
+.friend_ul div ul li{
+		list-style-type:none;
+		margin-top:3px
+	}

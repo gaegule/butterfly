@@ -52,12 +52,14 @@
 		FROM sns_profile a
 		inner join tw_user b on b.user_no = a.user_no
 		WHERE a.user_no = #{user_no}
+		AND ifnull(use_yn,'') != 'N'
 		order by a.regist_date desc, 	a.user_no
 		LIMIT 10 OFFSET #{pageStart}
     </select > 
     
     <select id ="selectSnsFriendProFileList" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
-        SELECT	sns_profile_no,
+
+	    SELECT	sns_profile_no,
         		ifnull(a.user_no,'') AS user_no,
         		d.user_name, 
         		ifnull(a.attach_file_no,'') AS attach_file_no, 
@@ -67,14 +69,18 @@
 		FROM sns_profile a
 		inner join tw_user d on d.user_no = a.user_no
 	    where exists (
-	      select  b.user_no , c.f_user_no
-	      from  tw_user b
-	      left outer join tw_friend c on c.t_user_no = b.user_no
-	      where b.user_no = #{user_no}
-	      and   a.user_no = b.user_no or a.user_no = f_user_no
+	      select user_no
+	        from (
+	          select  distinct b.user_no
+	  	      from  tw_user b
+	  	      LEFT OUTER join tw_friend c on c.t_user_no = b.user_no
+	  	      where (c.t_user_no = #{user_no} or c.f_user_no = #{user_no} or b.user_no = #{user_no})
+	        ) c
+	      where   a.user_no = c.user_no
 	    )
+	    and ifnull(use_yn,'') != 'N'
 		order by a.regist_date desc, 	a.user_no
-		LIMIT 10 OFFSET #{pageStart}
+
     </select > 
     
     
@@ -144,11 +150,11 @@
 		        ,c.nickname
 		        ,c.job
 		        ,c.email
+		        ,if(a.status='S','친구','친구대기중') AS status
 		from    tw_friend a
 		inner join tw_user b On b.user_no = a.f_user_no
 		inner join tw_user_profile c On c.user_no = b.user_no
 		where a.t_user_no = #{user_no}
-		and	  a.status = #{status}
     </select >
     
     <select id ="selectFriendSearch" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
@@ -166,7 +172,7 @@
 		where not exists(
 			select ''
 			from	tw_friend c
-			where	c.t_user_no = a.user_no
+			where	c.f_user_no = a.user_no
 			and		c.t_user_no = #{user_no}
 		)
 		and	a.user_name = #{user_name}
@@ -212,4 +218,9 @@
     <delete id ="deleteSnsFile" parameterType="java.util.HashMap" >
     	delete from sns_file WHERE attach_file_no =#{attach_file_no} 
     </delete>
+    
+    <update id ="deleteSnsUseYn" parameterType="java.util.HashMap" >
+    	update sns_profile set use_yn='N' 
+    	where sns_profile_no =#{sns_profile_no}
+    </update>
 </mapper>

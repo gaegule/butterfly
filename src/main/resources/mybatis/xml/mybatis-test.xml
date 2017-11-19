@@ -28,4 +28,62 @@
     	)
     </insert>
     
+    <select id ="login_select" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        SELECT	user_no
+        		, user_id
+        		, user_name
+        		, picture_url
+        		, regist_date 
+		FROM	tw_user
+		WHERE	user_id = #{login_id}
+		AND		password = #{login_pw}
+		<!-- AND		password = password(#{login_pw}) -->
+       
+    </select >
+    
+    <select id ="login_check" parameterType="java.util.HashMap" resultType= "java.lang.Integer">
+        SELECT	count(1) cnt
+		FROM	tw_user
+		WHERE	user_id = #{email}
+       
+    </select >
+    
+    <insert id ="insertUser" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="id" >
+    	insert into tw_user (
+    		user_id ,
+    		password ,
+    		user_name ,
+    		regist_date 
+    	) values (
+    		#{email},
+    		#{password},
+    		#{user_name},
+    		sysdate()
+    	)
+    	
+    	<selectKey keyProperty="idx" resultType="java.lang.Integer" order="AFTER"> 
+    		SELECT LAST_INSERT_ID()
+    	</selectKey>
+
+    </insert>
+    
+    <insert id ="insertUserFrofile" parameterType="java.util.HashMap" >
+    	insert into tw_user_profile (
+    		user_no ,
+    		birthday ,
+    		sex ,
+    		nickname ,
+    		email ,
+    		phone ,
+    		regist_date 
+    	) values (
+    		#{user_no},
+    		#{birthday},
+    		#{sex},
+    		#{nickname},
+    		#{email},
+    		#{phone},
+    		sysdate()
+    	)
+    </insert>
 </mapper>

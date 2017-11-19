@@ -55,12 +55,28 @@
 		FROM	tw_file
     	WHERE	attach_file_no = #{bbsNo}
     </select>
+    <select id ="selectBbsDetailAttachSeq" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+	    SELECT	attach_file_no, 
+	    		attach_file_seq, 
+	    		orginal_file_nm, 
+	    		stored_file_nm, 
+	    		file_size, 
+	    		DATE_FORMAT( regist_date , '%Y-%m-%d' ) AS regist_date, 
+	    		use_yn 
+		FROM	tw_file
+    	WHERE	attach_file_no = #{attach_file_no}
+    	AND		attach_file_seq = #{attach_file_seq}
+    </select>
     <select id ="selectBbsMaxSeq" parameterType="java.util.HashMap" resultType= "java.lang.Integer">
         select ifnull(max(no)+1,1) as maxno from tw_bbs
     </select >
     
     <select id ="selectFileMaxSeq" parameterType="java.util.HashMap" resultType= "java.lang.Integer">
         select ifnull(max(attach_file_seq)+1,1) as maxno from tw_file where attach_file_no = #{attach_file_no}
+    </select >
+    
+    <select id ="selectFileMaxSeqU" parameterType="java.util.HashMap" resultType= "java.util.HashMap">
+        select ifnull(max(attach_file_seq),0) as maxno, count(1) as cnt from tw_file where attach_file_no = #{bbsId}
     </select >
     
     <insert id ="insertNewBBS" parameterType="java.util.HashMap" >
@@ -88,8 +104,8 @@
 			#{no},
 			#{title}, 
 			#{contentVal},
+			#{nm},
 			#{passw},
-			#{nm}, 
 			#{grp}, 
 			#{seq}, 
 			#{lvl}, 
@@ -126,4 +142,7 @@
     <insert id ="deleteMisung" parameterType="java.util.HashMap" >
     	delete from tw_bbs where no = #{bbsNo}
     </insert>
+    <delete id ="deleteBbsAttach" parameterType="java.util.HashMap" >
+    	delete from tw_file where attach_file_no = #{attach_file_no} and attach_file_seq = #{attach_file_seq}
+    </delete>
 </mapper>

@@ -1,15 +1,20 @@
 	/***
 	* ajax post
 	***/
+			
 	function ajax_form_post(urlA,formId,type,tableNm,callback,pageIdx){
-
+		//alert("ajaxajaxajaxfjkaljfdlkajdflakj");
+		
+		//alert(type + " // " + typeof callback);
+		
 		$.ajax({
 		    url : urlA,
 		    dataType : "json",
 		    type : "post",
 		    data : $('#'+formId).serializeArray(),
 		    success: function(data) {
-	
+		    	//alert("rejdfklsjldfkjakldfj=="+type);
+
 		        if(type == "LIST"){
 		        	//alert(JSON.stringify(data));
 		        	//$(tableNm).bootstrapTable('refresh');
@@ -18,8 +23,13 @@
 		        	//$(tableNm).init();
 		        	//$(tableNm).bootstrapTable();
 		        	paging_add(data.cnt,pageIdx);
+
+		        	//alert($(tableNm+" tbody").html());
+		        	//alert(tableNm);
 		        	if(typeof $(tableNm+" tbody").html() == "undefined"){
-		        		$(tableNm).bootstrapTable({
+		        		//alert(1)
+		        		//alert(JSON.stringify(data.list));
+		        		$("#"+tableNm).bootstrapTable({
 			                data: data.list
 			            });
 		        	}else{
@@ -48,9 +58,14 @@
 		        	    }
 		        	    	
 		        	});
+		        	if(type == "DETAIL"){
+		        		//alert("detaildkfjalkdjflak")
+		        		attachFileDetail_add(data.attachList);
+		        	}
 		        	
 		        	if(type == "DETAIL2"){
 		        		if(data.attachList != null && data.attachList != "null"){
+		        			//alert(JSON.stringify(data.attachList));
 		        			var attachList = attachFileList_add(data.attachList);
 		        			$("#fileAttachList").html("");
 		        			$("#fileAttachList").html(attachList);
@@ -67,10 +82,28 @@
 		        	if(typeof callback =="function")
 		        		callback(data.detail);
 		
+		        }else if(type == "SNSSAVE"){
+
+		        	if(typeof callback =="function")
+		        		callback(data);
+		        }else if(type == "SNSLIST"){
+		        	
+		        	//alert(JSON.stringify(data));
+		        	if(typeof callback =="function")
+		        		callback(data);
+		        }else if(type == "callBack"){
+
+		        	if(typeof callback =="function")
+		        		callback(data);
+		        }else if(type == "FLIST"){
+		        	
+		        	//alert(JSON.stringify(data));
+		        	if(typeof callback =="function")
+		        		callback(data.list);
 		        }
 		    },
 		    error:function(request,status,error){
-		        alert("code:"+request.status+"\n"+"error:"+error);
+		        alert("code:"+request.status+"\n"+"error:"+error + " // requeset=="+request.responseText);
 		    }
 		 
 		});
@@ -108,6 +141,50 @@
 	        contentType: false,
 	        success: function(data, textStatus, jqXHR) {
 	        	if(typeof callback =="function"){
+	        		//alert(data);
+	        		callback(data);
+	        	}
+	        }, error: function(jqXHR, textStatus, errorThrown) {}
+	    });
+	}
+	
+	/***
+	* ajax insert attach 
+	***/
+	function ajax_form_post3(urlA,formId,type,tableNm,callback){
+	
+		alert("ajax1");
+		
+		var obj = $("#imgForm");
+	
+		var data = new FormData();
+		
+		alert("ajax3");
+		
+		$.each($(obj).find("input[type='file']"), function(i, tag) {
+			alert(i);
+	        $.each($(tag)[0].files, function(i, file) {
+	        	alert(file);
+	        	data.append(tag.name, file);
+	        });
+	        //data.append(tag.name,$("input[name="+tag.name+"]")[i].files[0]);
+	    });
+		
+		var dataParam = $(obj).serializeArray();
+	    $.each(dataParam, function (i, val) {
+	    	data.append(val.name, val.value);
+	    });
+		
+	    $.ajax({
+	        url: urlA,
+	        type: "post",
+	        dataType: "text",
+	        data: data,
+	        // cache: false,
+	        processData: false,
+	        contentType: false,
+	        success: function(data, textStatus, jqXHR) {
+	        	if(typeof callback =="function"){
 	        		alert(data);
 	        		callback(data);
 	        	}
@@ -121,11 +198,13 @@
 	function attachFileList_add(data){
 	
 		var fileHtml = "";
+		
+		var attachPath="C:/spring-tool-suite-3.7.3/sts-bundle/workspace/butterfly/src/main/webapp/bbsFile/";
 		for(var i=0; i<data.length; i++){
 	
 			fileHtml += " <li> ";
 			fileHtml += " <i class='fa fa-floppy-o fa-fw'></i> ";
-			fileHtml += " <a href=''>"+data[i].orginal_file_nm	+"</a> ";
+			fileHtml += " <a href='/com/fileDownload?fileName="+data[i].orginal_file_nm+"' target='_blank' download>"+data[i].orginal_file_nm	+"</a> ";
 			fileHtml += " <span class='rb-size'>"+data[i].file_size+"KB</span> ";
 			fileHtml += " <span class='rb-down' data-toggle='tooltip' title='다운로드 수'>0</span> ";
 			fileHtml += " </li> ";
